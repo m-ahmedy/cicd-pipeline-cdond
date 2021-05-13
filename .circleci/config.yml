@@ -108,9 +108,6 @@ jobs:
                   name: Install NPM dependencies
                   command: cd frontend && npm install
             - run:
-                  name: Lint front-end
-                  command: cd frontend && npm run lint
-            - run:
                   name: Test coverage front-end
                   command: cd frontend && npm run test:cov
             - run:
@@ -127,9 +124,6 @@ jobs:
             - run:
                   name: Install NPM dependencies
                   command: cd backend && npm install
-            - run:
-                  name: Lint back-end
-                  command: cd backend && npm run lint
             - run:
                   name: Test coverage back-end
                   command: cd backend && npm run test:cov
