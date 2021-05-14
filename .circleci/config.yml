@@ -185,6 +185,9 @@ jobs:
           - attach_workspace:
               at: ~/
           - run:
+                name: Inventory Contents
+                command: cat .circleci/ansible/inventory.txt
+          - run:
                 name: Install Ansible
                 command: |
                     apk add --update ansible
