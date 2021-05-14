@@ -124,11 +124,8 @@ jobs:
                   name: Install NPM dependencies
                   command: cd frontend && npm install
             - run:
-                  name: Test coverage front-end
-                  command: cd frontend && npm run test:cov
-            - run:
                   name: Security audit front-end
-                  command: cd frontend && npm audit
+                  command: cd frontend && npm audit --audit-level=critical
 
     scan-backend:
         docker:
@@ -141,13 +138,8 @@ jobs:
                   name: Install NPM dependencies
                   command: cd backend && npm install
             - run:
-                  name: Test coverage back-end
-                  command: cd backend && npm run test:cov
-                  environment:
-                    NODE_OPTIONS: --max_old_space_size=8192
-            - run:
                   name: Security audit back-end
-                  command: cd backend && npm audit
+                  command: cd backend && npm audit --audit-level=critical
 
 cleanup:
     docker:
