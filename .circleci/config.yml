@@ -165,7 +165,7 @@ jobs:
                       --output text >> .circleci/ansible/inventory.txt
             - run:
                   name: Install tar dependency
-                  command: yum update -y && yum install -y tar
+                  command: yum update -y && yum install -y tar gzip
             - persist_to_workspace:
                   root: ~/
                   paths:
