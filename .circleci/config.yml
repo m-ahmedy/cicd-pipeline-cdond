@@ -54,6 +54,10 @@ jobs:
             - save_cache:
                   paths: [frontend/node_modules]
                   key: frontend-build
+            - persist_to_workspace:
+                root: frontend
+                paths:
+                  - dist
 
     build-backend:
         docker:
@@ -74,6 +78,10 @@ jobs:
             - save_cache:
                   paths: [backend/node_modules]
                   key: backend-build
+            - persist_to_workspace:
+                root: backend
+                paths:
+                  - dist
 
     test-frontend:
         docker:
@@ -102,6 +110,8 @@ jobs:
             - run:
                   name: Test back-end
                   command: cd backend && npm run test
+                  environment:
+                    NODE_OPTIONS: --max_old_space_size=8192
 
     scan-frontend:
         docker:
@@ -133,6 +143,8 @@ jobs:
             - run:
                   name: Test coverage back-end
                   command: cd backend && npm run test:cov
+                  environment:
+                    NODE_OPTIONS: --max_old_space_size=8192
             - run:
                   name: Security audit back-end
                   command: cd backend && npm audit
