@@ -11,8 +11,8 @@ commands:
                   name: Destroy environments
                   when: on_fail
                   command: |
-                      # Your code here
-                      exit 1
+                      aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflow_id >>
+                      aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
 
     revert-migrations:
         description: Revert the last migration if successfully run in the current workflow.
@@ -55,9 +55,9 @@ jobs:
                   paths: [frontend/node_modules]
                   key: frontend-build
             - persist_to_workspace:
-                root: frontend
-                paths:
-                  - dist
+                  root: frontend
+                  paths:
+                      - dist
 
     build-backend:
         docker:
@@ -79,9 +79,9 @@ jobs:
                   paths: [backend/node_modules]
                   key: backend-build
             - persist_to_workspace:
-                root: backend
-                paths:
-                  - dist
+                  root: backend
+                  paths:
+                      - dist
 
     test-frontend:
         docker:
@@ -111,7 +111,7 @@ jobs:
                   name: Test back-end
                   command: cd backend && npm run test
                   environment:
-                    NODE_OPTIONS: --max_old_space_size=8192
+                      NODE_OPTIONS: --max_old_space_size=8192
 
     scan-frontend:
         docker:
@@ -140,6 +140,42 @@ jobs:
             - run:
                   name: Security audit back-end
                   command: cd backend && npm audit --audit-level=critical
+    deploy-infrastructure:
+        docker:
+            - image: amazon/aws-cli:latest
+        steps:
+            - checkout
+            - run:
+                  name: Ensure back-end infrastructure exists
+                  command: |
+                      aws cloudformation deploy \
+                      --template-file .circleci/files/backend.yml \
+                      --tags project=udapeople-${CIRCLE_WORKFLOW_ID} \
+                      --stack-name=udapeople-backend-${CIRCLE_WORKFLOW_ID} \
+                      --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
+            - run:
+                  name: Ensure front-end infrastructure exist
+                  command: |
+                      aws cloudformation deploy \
+                      --template-file .circleci/files/frontend.yml \
+                      --tags project=udapeople-${CIRCLE_WORKFLOW_ID} \
+                      --stack-name=udapeople-frontend-${CIRCLE_WORKFLOW_ID} \
+                      --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
+            - run:
+                  name: Add back-end ip to ansible inventory
+                  command: |
+                      echo "[backend]" > .circleci/ansible/inventory.txt
+                      aws ec2 describe-instances \
+                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                      --filters tag:backend-${CIRCLE_WORKFLOW_ID} \
+                      --output text >> .circleci/ansible/inventory.txt
+            - persist_to_workspace:
+                  root: ~/
+                  paths:
+                      - project/.circleci/ansible/inventory.txt
+            # Here's where you will add some code to rollback on failure
+            - destroy-environment:
+                  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
 cleanup:
     docker:
@@ -173,3 +209,9 @@ workflows:
                   requires: [build-frontend]
             - scan-backend:
                   requires: [build-backend]
+            - deploy-infrastructure:
+                  requires:
+                      [test-frontend, test-backend, scan-frontend, scan-backend]
+                  filters:
+                      branches:
+                        only: [master]
