@@ -46,9 +46,6 @@ jobs:
                   name: Install NPM dependencies
                   command: cd frontend && npm install
             - run:
-                  name: Lint front-end
-                  command: cd frontend && npm run lint
-            - run:
                   name: Build front-end
                   command: cd frontend && npm run build
             - save_cache:
@@ -69,9 +66,6 @@ jobs:
             - run:
                   name: Install NPM dependencies
                   command: cd backend && npm install
-            - run:
-                  name: Lint back-end
-                  command: cd backend && npm run lint
             - run:
                   name: Build back-end
                   command: cd backend && npm run build
