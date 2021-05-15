@@ -153,8 +153,8 @@ jobs:
                         --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
                         --query 'Reservations[*].Instances[*].PublicIpAddress' \
                         --output text)
-                      echo "http://$BACKEND_AWS_PUBLIC_IP:3030" >> ~/project/.circleci/outputs/backend-url.txt
-                      cat ~/project/.circleci/outputs/backend-url.txt
+                      echo "http://$BACKEND_AWS_PUBLIC_IP:3030" >> ~/project/.circleci/outputs/backendUrl.txt
+                      cat ~/project/.circleci/outputs/backendUrl.txt
                       echo "[backend]" >> .circleci/ansible/inventory.txt
                       echo "$BACKEND_AWS_PUBLIC_IP" >> .circleci/ansible/inventory.txt
             - run:
@@ -164,7 +164,7 @@ jobs:
                   root: ~/
                   paths:
                       - project/.circleci/ansible/inventory.txt
-                      - project/.circleci/outputs/*
+                      - project/.circleci/outputs/backendUrl.txt
             - destroy-environment:
                   workflow_id: ${CIRCLE_WORKFLOW_ID}
 
@@ -241,8 +241,8 @@ jobs:
             - run:
                   name: Build updated frontend
                   command: |
-                      cat ~/project/.circleci/outputs/backend-url.txt
-                      export API_URL=`cat ~/project/.circleci/outputs/backend-url.txt`
+                      cat ~/project/.circleci/outputs/backendUrl.txt
+                      export API_URL=`cat ~/project/.circleci/outputs/backendUrl.txt`
                       echo "API_URL: $API_URL"
                       cd frontend
                       npm install
