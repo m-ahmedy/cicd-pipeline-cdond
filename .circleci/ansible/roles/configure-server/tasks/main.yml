@@ -17,9 +17,16 @@
 - name: "Install dependencies"
   become: yes
   apt:
-    name: ["nodejs", "npm"]
+    name: ["nodejs", "npm", "unzip"]
     state: latest
     update_cache: yes
+
+- name: "Install latest NPM"
+  become: yes
+  shell: |
+    npm install -g n
+    n latest
+    npm install -g npm
 
 - name: "Install PM2"
   become: yes
