@@ -24,7 +24,7 @@
   shell: |
       export
       cd ~/backend-app
-      pm2 start main.js
+      pm2 start main.js --update-env
   register: execute_node
 
 - name: print message
