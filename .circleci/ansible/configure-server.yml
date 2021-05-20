@@ -8,9 +8,9 @@
     - ansible_stdout_callback: yaml
 
   pre_tasks:
-    - name: "Wait 60 seconds for target connection to become reachable/usable."
+    - name: "Wait 600 seconds for target connection to become reachable/usable."
       wait_for_connection:
-        timeout: 60
+        timeout: 600
 
     - name: "Install python for Ansible."
       become: true
