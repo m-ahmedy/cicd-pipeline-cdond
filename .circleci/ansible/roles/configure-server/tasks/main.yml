@@ -21,29 +21,14 @@
     state: latest
     update_cache: yes
 
-- name: "Install NVM"
-  become: yes
-  shell: |
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-    echo "source $HOME/.nvm/nvm.sh" >> ~/.bashrc
-  args:
-    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
-    executable: /bin/bash
-
 - name: "Install latest LTS Node.js and NPM"
   become: yes
   shell: |
-    nvm install 14.17.0
-    nvm use 14.17.0
-    nvm alias default 14.17.0
+    curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs
     node --version
     npm --version
-  args:
-    executable: /bin/bash
 
 - name: "Install PM2"
   become: yes
   shell: |
     npm i -g pm2
-  args:
-    executable: /bin/bash
