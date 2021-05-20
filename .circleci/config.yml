@@ -356,15 +356,14 @@ jobs:
             - run:
                 name: Install dependencies
                 command: |
-                    apk add --update curl
+                    apk add --update curl bash
                     pip install awscli
             - run:
-                name: Get old stack workflow id
+                name: Clean up old stacks
+                shell: /bin/bash
                 command: |
                     export OLD_WORKFLOW_ID=$(curl -H "token: ${MEMSTASH_TOKEN}" --request GET https://api.memstash.io/values/old-workflow-id)
-            - run:
-                name: Remove old stacks and files
-                command: |                    
+    
                     export RAW_STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                         --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
                     export STACKS=($RAW_STACKS)
