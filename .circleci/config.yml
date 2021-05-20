@@ -306,7 +306,7 @@ jobs:
                   command: |
                       if curl -s http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website.${AWS_DEFAULT_REGION}.amazonaws.com/ | grep "Welcome"
                       then
-                        return 1
+                        return 0
                       else
                         return 1
                       fi
@@ -340,9 +340,9 @@ jobs:
                       echo "OLD_WORKFLOW_ID: $OLD_WORKFLOW_ID."
                       curl -H "Content-Type: text/plain" -H "token: ${MEMSTASH_TOKEN}" --request PUT --data "$OLD_WORKFLOW_ID" https://api.memstash.io/values/old-workflow-id
 
-                      aws cloudformation deploy .circleci/files/cloudfront.yml \
-                      --template-file .circleci/ \
-                      --parameter-overrides WorkflowID="udapeople-prod-${CIRCLE_WORKFLOW_ID}" \
+                      aws cloudformation deploy \
+                      --template-file .circleci/files/cloudfront.yml \
+                      --parameter-overrides WorkflowID="prod-${CIRCLE_WORKFLOW_ID}" \
                       --stack-name udapeople-prod-cloudfront
             - destroy-environment:
                   workflow_id: "${CIRCLE_WORKFLOW_ID}"
