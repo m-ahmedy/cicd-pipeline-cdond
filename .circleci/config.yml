@@ -362,12 +362,14 @@ jobs:
                 name: Get old stack workflow id
                 command: |
                     export OLD_WORKFLOW_ID=$(curl -H "token: ${MEMSTASH_TOKEN}" --request GET https://api.memstash.io/values/old-workflow-id)
-                    export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                        --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-                    printf '%s\n' "${STACKS[@]}"
             - run:
                 name: Remove old stacks and files
-                command: |
+                command: |                    
+                    export RAW_STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                        --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+                    export STACKS=($RAW_STACKS)
+                    printf '%s\n' "${STACKS[@]}"
+
                     if printf '%s\n' "${STACKS[@]}" | grep -q "$OLD_WORKFLOW_ID"; then
                         echo "Removing previous stack"
                         aws s3 rm "s3://udapeople-${OLD_WORKFLOW_ID}" --recursive
