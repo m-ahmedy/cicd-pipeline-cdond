@@ -17,16 +17,23 @@
 - name: "Install dependencies"
   become: yes
   apt:
-    name: ["nodejs", "npm", "unzip"]
+    name: ["unzip", "curl", "git"]
     state: latest
     update_cache: yes
 
-- name: "Install latest NPM"
+- name: "Install NVM"
   become: yes
   shell: |
-    npm install -g n
-    n lts
-    npm install -g npm
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+    export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+    source ~/.bashrc
+
+- name: "Install latest LTS Node.js and NPM"
+  become: yes
+  shell: |
+    nvm install --lts
+    nvm use --lts
 
 - name: "Install PM2"
   become: yes
