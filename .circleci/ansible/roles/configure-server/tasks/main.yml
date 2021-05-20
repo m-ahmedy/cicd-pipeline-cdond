@@ -25,20 +25,25 @@
   become: yes
   shell: |
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-    export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-    source ~/.bashrc
+    echo "source $HOME/.nvm/nvm.sh" >> ~/.bashrc
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+    executable: /bin/bash
 
 - name: "Install latest LTS Node.js and NPM"
   become: yes
   shell: |
-    nvm install --lts
-    nvm use --lts
+    nvm install 14.17.0
+    nvm use 14.17.0
+    nvm alias default 14.17.0
+    node --version
+    npm --version
+  args:
+    executable: /bin/bash
 
 - name: "Install PM2"
   become: yes
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
+  shell: |
+    npm i -g pm2
+  args:
+    executable: /bin/bash

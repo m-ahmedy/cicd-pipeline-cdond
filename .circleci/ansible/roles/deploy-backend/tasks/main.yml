@@ -14,11 +14,15 @@
       cd ~/backend-app
       unzip dist.zip
       rm -rf dist.zip
+  args:
+    executable: /bin/bash
 
 - name: "Install dependencies for project"
   shell: |
       cd ~/backend-app
       npm install --force
+  args:
+    executable: /bin/bash
 
 - name: "Executing node"
   shell: |
@@ -26,6 +30,8 @@
       cd ~/backend-app
       pm2 start main.js --update-env
   register: execute_node
+  args:
+    executable: /bin/bash
 
 - name: print message
   debug:
@@ -35,3 +41,5 @@
   become: true
   shell: |
       env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
+  args:
+    executable: /bin/bash
